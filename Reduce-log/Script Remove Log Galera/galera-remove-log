@@ -1,0 +1,35 @@
+#!/bin/bash
+#
+#Dwiyan Galuh W
+#Remove Log Galera 
+#
+
+ls -ltr GRA_* | awk -F" " '{print $6,"|",$7,"|",$9}' > data.txt
+
+
+cat data.txt | while read data
+do
+BULAN=`echo $data | awk -F"|" '{print $1}'| tr -d " "`
+TANGGAL=`echo $data | awk -F"|" '{print $2}'| tr -d " "`
+DATA=`echo $data | awk -F"|" '{print $3}'| tr -d " "`
+CURRENT=`date +%b`
+CUR_ONE=`date -d"-1 days" +%d`
+CUR_TWO=`date -d"-2 days" +%d`
+CUR_DAY=`date +%d`
+
+if [ $BULAN == $CURRENT ]
+then
+   if [[ "$TANGGAL" == "$CUR_ONE" ]] || [[ "$TANGGAL" == "$CUR_TWO" ]] || [[ "$TANGGAL" == "$CUR_DAY" ]]
+   then
+        echo "AMAN KAN LOG"
+   else
+        echo $BULAN $TANGGAL
+        echo "HAPUS LOG"
+        rm $DATA
+   fi
+else
+  echo $BULAN $TANGGAL
+  echo "HAPUS LOG"
+  rm $DATA
+fi
+done

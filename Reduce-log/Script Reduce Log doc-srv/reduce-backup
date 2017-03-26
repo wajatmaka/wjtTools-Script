@@ -1,0 +1,39 @@
+#!/bin/bash
+#
+##### doc-srv compress log  ######
+##### Dwiyan Galuh W        ######
+#
+
+DIR="/opt/alfresco-5.1.e/tomcat/temp"
+BULAN=`date  +%b | tr -d " "`
+TANGGAL=`date  +%d | tr -d " "`
+
+HDD=`df -h | grep -i "/opt" | grep "%" | awk -F" " '{print $4}'| tr -d "%" | tr -d " "`
+WFS=`ls -ltr $DIR/WFSTInput* | awk -F" " '{print $6,"|",$9}' | grep -v "lzma"> $DIR/tmp-wfs.txt`
+SORT=`ls -ltr $DIR/sort* | awk -F" " '{print $6,"|",$9}' |grep -v "lzma" > $DIR/tmp-sort.txt`
+UPLOAD=`ls -ltr $DIR/upload_* |awk -F" " '{print $6,"|",$9}' | grep -v "lzma" > $DIR/tmp-upload.txt`
+
+if [ $HDD -gt 80 ]
+then
+for x in  `ls -1 $DIR/tmp-*.txt`
+do
+    cat $x |grep -v lzma  | while read  data
+    do
+      dat_bulan=`echo $data | awk -F"|" '{print $1}' | tr -d " "`
+      dat=`echo $data | awk -F"|" '{print $2}' | tr -d " "`
+      if [ $dat_bulan != $BULAN ] 
+      then
+        echo `date` compress data bulan $dat_bulan $dat
+        lzma -z $dat
+      else
+        echo $dat masih pada bulan yang sama
+      fi  
+    done
+done
+else
+   echo "`date` Hardisk Masih Di Bawah 80%"
+fi
+
+rm $DIR/tmp-wfs.txt
+rm $DIR/tmp-sort.txt
+rm $DIR/tmp-upload.txt

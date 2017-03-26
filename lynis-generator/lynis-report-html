@@ -1,0 +1,7 @@
+#!/bin/bash
+# Dwiyan galuh W
+
+BERANDA="/tmp/lynis-report"
+mkdir -p $BERANDA
+bash $BERANDA/core/generated-report-lynis 2> /dev/null
+cp /tmp/lynis-report/results/lynis-humanreadable.html /tmp

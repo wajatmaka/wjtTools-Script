@@ -1,0 +1,35 @@
+#!/bin/bash
+echo "readonly TMOUT=900" >> /etc/profile.d/os-sec.sh
+echo "readonly HISTFILE" >> /etc/profile.d/os-sec.sh
+chmod +x /etc/profile.d/os-sec.sh
+echo "tty1" > /etc/securetty
+chmod 700 /root
+echo "blacklist usb-storage" > /etc/modprobe.d/blacklist-usbstorage
+cat << EOF > /etc/sysconfig/init 
+BOOTUP=color
+RES_COL=60
+MOVE_TO_COL="echo -en \\033[${RES_COL}G"
+SETCOLOR_SUCCESS="echo -en \\033[0;32m"
+SETCOLOR_FAILURE="echo -en \\033[0;31m"
+SETCOLOR_WARNING="echo -en \\033[0;33m"
+SETCOLOR_NORMAL="echo -en \\033[0;39m"
+PROMPT=no
+AUTOSWAP=no
+ACTIVE_CONSOLES=/dev/tty[1-6]
+SINGLE=/sbin/sulogin
+EOF
+cat << EOF > /etc/init/control-alt-delete.override
+start on control-alt-delete
+exec /usr/bin/logger -p authpriv.notice -t init "Ctrl-Alt-Del was pressed and ignored"
+EOF
+cat << EOF > /tmp/grub.patch
+--- grub.conf   2014-11-09 13:43:45.085378787 +0330
++++ grub.conf.new       2014-11-09 13:43:48.508377857 +0330
+@@ -9,6 +9,7 @@
+default=0
+timeout=5
++password --md5 \$1\$T.IYz1\$wLQ21IjrUuMeLfkGd1Xby0
+splashimage=(hd0,0)/boot/grub/splash.xpm.gz
+hiddenmenu
+EOF
+patch -s /boot/grub/grub.conf < /tmp/grub.patch

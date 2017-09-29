@@ -8,8 +8,8 @@ OPTION=$1;
 DATA=$2;
 
 
-function Extract:File()
-{
+function Extract:File(){
+
 	Detect_GZIP=`file -b $DATA | grep -i "gzip" | wc -l 2> /dev/null` 
 	Detect_BZIP=`file -b $DATA | grep -i "bzip2" | wc -l  2> /dev/null` 
 	Detect_ZIP=`file -b $DATA | grep -i "Zip" | wc -l 2> /dev/null`
@@ -143,6 +143,10 @@ function Extract:File()
     fi
 }
 
+function Compress:File(){
+	echo "aha"
+
+}
 
 
 if [ -z $DATA ]
@@ -154,10 +158,10 @@ else
 		Extract:File;
 	    ;;
     	compress | Compress | c )
-    
+    	Compress:File;
     	;;
     	*)
-		echo "Command for  extract : wjt-compress [extract|Extract|e] [Directory|File] "
+		echo "Command for extract  : wjt-compress [extract|Extract|e] [Directory|File] "
 		echo "Command for compress : wjt-compress [compress|Compress|c] [Directory|File]"
  		;;
 	esac

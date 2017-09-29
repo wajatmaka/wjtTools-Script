@@ -1,0 +1,119 @@
+#!/bin/bash
+# Extract Any File Compress
+# by wajatmaka
+# DGH
+# blog.wajatmaka.com
+
+OPTION=$1;
+DATA=$2;
+
+
+function Extract:File()
+{
+	Detect_GZIP=`file -b $DATA | grep -i "gzip" | wc -l 2> /dev/null` 
+	Detect_BZIP=`file -b $DATA | grep -i "bzip2" | wc -l  2> /dev/null` 
+	Detect_ZIP=`file -b $DATA | grep -i "Zip" | wc -l 2> /dev/null`
+	Detect_TARGZ=`file -b $DATA | grep -i "POSIX tar" | wc -l  2> /dev/null`
+	Detect_RAR=`file -b $DATA | grep -i "RAR" | wc -l  2> /dev/null`
+	Detect_XZ=`file -b $DATA | grep -i "XZ" | wc -l  2> /dev/null`
+	Detect_TARBZIP=`file -b $DATA | grep -i "bzip2" | wc -l  2> /dev/null`
+	Detect_TARBZIP2=`file -b $DATA | grep -i "bzip2" | wc -l  2> /dev/null`
+	Detect_LZMA=`file -b $DATA | grep -i "LZMA" | wc -l  2> /dev/null`
+	Detect_7ZIP=`file -b $DATA | grep -i "7-zip" | wc -l  2> /dev/null`
+	Detect_TARBZ2=`file -b $DATA | grep -i "bzip2" | wc -l  2> /dev/null`
+
+     if [ -f $DATA ] ; then
+         case $DATA in
+            *.tar.bz2)   
+                if [ "$Detect_TARBZIP2" == "1" ]
+				then
+					echo "EXTRACT DATA BZIP2";
+					tar xvjf $DATA
+				else
+                	echo "File Did Not BZIP2";
+                fi   
+                ;;
+            *.tar.gz)  
+            	if [ "$Detect_TARGZ" == "1" ]
+				then
+					echo "EXTRACT DATA TAR ARCHIVE GNU";
+					tar xvjf $DATA
+				else
+                	echo "File Did Not TAR ARCHIVE GNU";
+                fi   
+                ;;  
+            *.lzma)    
+            	if [ "$Detect_LZMA" == "1" ]
+				then
+					echo "EXTRACT DATA LZMA";
+					lzma --decompress --force $DATA;  
+				else
+                	echo "File Did Not LZMA";
+                fi                  
+                ;;
+            *.bz2) 
+            	if [ "$Detect_LZMA" == "1" ]
+				then
+					echo "EXTRACT DATA LZMA";
+					lzma --decompress --force $DATA;  
+				else
+                	echo "File Did Not LZMA";
+                fi          
+                bunzip2 $DATA    
+                ;;
+            *.rar)
+                unrar x $DATA      
+                ;;
+            *.gz)
+                gunzip $DATA       
+                ;;
+            *.tar)
+                tar xvf $DATA      
+                ;;
+            *.tbz2)
+                tar xvjf $DATA     
+                ;;
+            *.tgz)
+                tar xvzf $DATA    
+                ;;
+            *.zip)
+                unzip $DATA     
+                ;;
+            *.Z)
+                uncompress $DATA  
+                ;;
+            *.7z)
+                7z x $DATA         
+                ;;
+            *)  
+                echo "'$DATA' cannot be extracted via extract" 
+                ;;
+        esac
+    else
+        echo "'$DATA' is not a valid file"
+    fi
+}
+
+
+
+if [ -z $DATA ]
+then
+	echo FILE EMPTY;
+else
+	case $OPTION in
+		extract | Extract | e )
+		Extract:File;
+	    ;;
+    	compress | Compress | c )
+    
+    	;;
+    	*)
+		echo "Command for  extract : wjt-compress [extract|Extract|e] [Directory|File] "
+		echo "Command for compress : wjt-compress [compress|Compress|c] [Directory|File]"
+ 		;;
+	esac
+fi
+
+
+
+

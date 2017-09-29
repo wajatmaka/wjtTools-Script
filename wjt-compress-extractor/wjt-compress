@@ -34,10 +34,10 @@ function Extract:File()
                 fi   
                 ;;
             *.tar.gz)  
-            	if [ "$Detect_TARGZ" == "1" ]
+            	if [ "$Detect_TARGZ" == "1" ] || [ "$Detect_GZIP" == "1" ]
 				then
 					echo "EXTRACT DATA TAR ARCHIVE GNU";
-					tar xvjf $DATA
+					tar xvzf $DATA
 				else
                 	echo "File Did Not TAR ARCHIVE GNU";
                 fi   
@@ -46,44 +46,93 @@ function Extract:File()
             	if [ "$Detect_LZMA" == "1" ]
 				then
 					echo "EXTRACT DATA LZMA";
-					lzma --decompress --force $DATA;  
+					lzma --decompress --force -v $DATA;  
 				else
                 	echo "File Did Not LZMA";
                 fi                  
                 ;;
             *.bz2) 
-            	if [ "$Detect_LZMA" == "1" ]
+            	if [ "$Detect_TARBZIP2" == "1" ]
 				then
-					echo "EXTRACT DATA LZMA";
-					lzma --decompress --force $DATA;  
+					echo "EXTRACT DATA BUNZIP2";
+					bunzip2 -d -f -v $DATA   
 				else
-                	echo "File Did Not LZMA";
-                fi          
-                bunzip2 $DATA    
+                	echo "File Did Not BUNZIP2";
+                fi      
                 ;;
             *.rar)
-                unrar x $DATA      
+            	if [ "$Detect_RAR" == "1" ]
+				then
+					echo "EXTRACT DATA RAR";
+					unrar v $DATA 
+					unrar x $DATA   
+				else
+                	echo "File Did Not RAR";
+                fi                      
                 ;;
             *.gz)
-                gunzip $DATA       
+            	if [ "$Detect_GZIP" == "1" ]
+				then
+					echo "EXTRACT DATA GZIP";
+					gunzip --force --verbose $DATA 
+				else
+                	echo "File Did Not GZIP";
+                fi 
                 ;;
             *.tar)
-                tar xvf $DATA      
+            	if [ "$Detect_TARGZ" == "1" ] || [ "$Detect_GZIP" == "1" ]
+				then
+					echo "EXTRACT DATA TAR ARCHIVE GNU";
+					 tar xvf $DATA  
+				else
+                	echo "File Did Not TAR ARCHIVE GNU";
+                fi                      
                 ;;
             *.tbz2)
-                tar xvjf $DATA     
+            	if [ "$Detect_TARBZ2" == "1" ] 
+				then
+					echo "EXTRACT DATA TAR ARCHIVE GNU BZIP2";
+					tar xvjf $DATA  
+				else
+                	echo "File Did Not TAR ARCHIVE GNU BZIP2";
+                fi                      
                 ;;
             *.tgz)
-                tar xvzf $DATA    
+            	if [ "$Detect_TARGZ" == "1" ] || [ "$Detect_GZIP" == "1" ]
+				then
+					echo "EXTRACT DATA TAR ARCHIVE GNU GZIP";
+					tar xvzf $DATA  
+				else
+                	echo "File Did Not TAR ARCHIVE GNU GZIP";
+                fi                     
                 ;;
             *.zip)
-                unzip $DATA     
+            	if [ "$Detect_ZIP" == "1" ] 
+				then
+					echo "EXTRACT DATA ZIPPER ";
+					unzip -v $DATA
+					unzip $DATA  
+				else
+                	echo "File Did Not ZIPPER";
+                fi    
                 ;;
             *.Z)
-                uncompress $DATA  
+            	if [ "$Detect_TARGZ" == "1" ] || [ "$Detect_GZIP" == "1" ]
+				then
+					echo "EXTRACT DATA UNCOMPRESS GZIP";
+					uncompress $DATA 
+				else
+                	echo "File Did Not UNCOMPRESS GZIP";
+                fi   
                 ;;
             *.7z)
-                7z x $DATA         
+            	if [ "$Detect_7ZIP" == "1" ]
+				then
+					echo "EXTRACT DATA 7-ZIP";
+					7z x $DATA
+				else
+                	echo "File Did Not 7-ZIP";
+                fi          
                 ;;
             *)  
                 echo "'$DATA' cannot be extracted via extract" 
@@ -113,7 +162,6 @@ else
  		;;
 	esac
 fi
-
 
 
 

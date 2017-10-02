@@ -155,6 +155,7 @@ function Extract:File(){
 }
 
 function Compress:File(){
+	echo "##############################"
 	echo "1. $DATA.tar.bz2"
 	echo "2. $DATA.tar.gz"
 	echo "3. $DATA.lzma"
@@ -168,6 +169,7 @@ function Compress:File(){
 	echo "11. $DATA.zip"
 	echo "12. $DATA.Z"
 	echo "13. $DATA.7z"
+	echo "##############################"
 	read -p "Choose number compression method : " compress
 
 	case $compress in

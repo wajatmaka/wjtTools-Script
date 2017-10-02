@@ -3,7 +3,7 @@
 # by wajatmaka
 # blog.wajatmaka.com
 # version 0.1
-# Extractor
+# Extractor and Compressor
 
 OPTION=$1;
 DATA=$2;
@@ -213,9 +213,15 @@ function Compress:File(){
 		;;
 		11 )
 		    echo "compress file $DATA using .zip"
-		    tar cvfz $DATA.tgz $DATA
+		    zip -9r $DATA $DATA
 		;;
 		12 )
+		    echo "compress file $DATA using tar.Z"
+		    tar cvfz $DATA.tar.Z $DATA
+		;;
+		13 )
+			echo "compress file $DATA using 7z"
+		    7z a $DATA.7z $DATA
 		;;
 		* )
 		;;

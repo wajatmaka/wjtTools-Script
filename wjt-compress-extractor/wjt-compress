@@ -1,8 +1,9 @@
 #!/bin/bash
 # Extract Any File Compress
 # by wajatmaka
-# DGH
 # blog.wajatmaka.com
+# version 0.1
+# Extractor
 
 OPTION=$1;
 DATA=$2;
@@ -41,7 +42,16 @@ function Extract:File(){
 				else
                 	echo "File Did Not TAR ARCHIVE GNU";
                 fi   
-                ;;  
+                ;; 
+            *.tar.lzma)    
+            	if [ "$Detect_LZMA" == "1" ]
+				then
+					echo "EXTRACT DATA TAR LZMA";
+					tar xvf $DATA;  
+				else
+                	echo "File Did Not LZMA";
+                fi                  
+                ;; 
             *.lzma)    
             	if [ "$Detect_LZMA" == "1" ]
 				then
@@ -51,6 +61,7 @@ function Extract:File(){
                 	echo "File Did Not LZMA";
                 fi                  
                 ;;
+          
             *.bz2) 
             	if [ "$Detect_TARBZIP2" == "1" ]
 				then
@@ -135,7 +146,7 @@ function Extract:File(){
                 fi          
                 ;;
             *)  
-                echo "'$DATA' cannot be extracted via extract" 
+                echo "'$DATA' cannot be extracted" 
                 ;;
         esac
     else
@@ -144,25 +155,97 @@ function Extract:File(){
 }
 
 function Compress:File(){
-	echo "aha"
+	echo "1. $DATA.tar.bz2"
+	echo "2. $DATA.tar.gz"
+	echo "3. $DATA.lzma"
+	echo "4. $DATA.tar.lzma"
+	echo "5. $DATA.bz2"
+	echo "6. $DATA.rar"
+	echo "7. $DATA.gz"
+	echo "8. $DATA.tar"
+	echo "9. $DATA.tbz2"
+	echo "10. $DATA.tgz"
+	echo "11. $DATA.zip"
+	echo "12. $DATA.Z"
+	echo "13. $DATA.7z"
+	read -p "Choose number compression method : " compress
 
+	case $compress in
+		1 )
+			echo "compress file $DATA using .tar.bz2"
+			tar cvfj $DATA.tar.bz2 $DATA
+		;;
+		2 )
+		    echo "compress file $DATA using .tar.gz"
+		    tar cvfz $DATA.tar.gz $DATA
+		;;
+		3 )
+			echo "compress file $DATA using .lzma"
+			lzma --compress -v $DATA
+		;;
+		4 )
+			echo "compress file $DATA using tar.lzma"
+			tar cvf - $DATA | lzma -c -9 > $DATA.tar.lzma
+		;;
+		5 )
+			echo "compress file $DATA using .bz2"
+			bzip2 -z -v $DATA
+		;;
+		6 )
+			echo "compress file $DATA using .rar"
+			rar a -r $DATA
+		;;
+		7 )
+			echo "compress file $DATA using .gzip"
+			gzip --verbose $DATA
+		;;
+		8 )
+			echo "compress file $DATA using .tar"
+			tar cvf $DATA.tar $DATA
+		;;
+		9 )
+			echo "compress file $DATA using .tbz"
+			tar cvfj $DATA.tbz $DATA
+		;;
+		10 )
+		    echo "compress file $DATA using .tgz"
+		    tar cvfz $DATA.tgz $DATA
+		;;
+		11 )
+		    echo "compress file $DATA using .zip"
+		    tar cvfz $DATA.tgz $DATA
+		;;
+		12 )
+		;;
+		* )
+		;;
+	esac
 }
 
 
 if [ -z $DATA ]
 then
-	echo FILE EMPTY;
+	echo "INSTRUCTION !!";
+	echo ""
+	echo "#################################################################################"
+    echo "# Command for extract  : wjt-compress [extract|Extract|e|-e] [Directory|File]   #"
+	echo "# Command for compress : wjt-compress [compress|Compress|c|-c] [Directory|File] #"
+	echo "#################################################################################"
+	echo ""
+	echo "example :"
+	echo "wjt-compress -e data.tar.gz || This command for extract file"
+	echo "wjt-compress -c data || This command for compress directory"
+	echo ""
 else
 	case $OPTION in
-		extract | Extract | e )
+		extract | Extract | e | -e )
 		Extract:File;
 	    ;;
-    	compress | Compress | c )
+    	compress | Compress | c | -c )
     	Compress:File;
     	;;
     	*)
-		echo "Command for extract  : wjt-compress [extract|Extract|e] [Directory|File] "
-		echo "Command for compress : wjt-compress [compress|Compress|c] [Directory|File]"
+		echo "Command Invalid!!!"
  		;;
 	esac
 fi

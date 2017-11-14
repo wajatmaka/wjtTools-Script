@@ -1,0 +1,12 @@
+def luas(*args):
+    for i in args:
+        a = 0;
+        a = args[i] + a 
+    return a+a
+
+
+
+print(luas(5,6))
+
+
+

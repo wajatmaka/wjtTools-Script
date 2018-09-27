@@ -1,0 +1,32 @@
+## SOURCE DESTINATION ####
+source s_net4 { 
+        udp(ip("10.32.100.27") port (5140) );
+};
+destination d_asa { 
+        file("/log/firewall/asa.log"
+            perm(0644)
+            create_dirs(yes)
+            fsync(yes)
+        );
+};
+
+
+## FILTERING DATA ###
+filter f_facility { 
+       facility(local7) and (level(warning) or level(debug) or level(notice));
+};
+
+filter f_syslog {
+       match("%ASA|%ASA-3-746016|%ASA-7-715075|%ASA-4-106023|TRAFFIC|permitted|Deny|Denied|denied", value("MESSAGE")); 
+};
+
+
+## ACL ###
+log { 
+    source(s_net4);
+    filter(f_facility);
+    filter(f_syslog);
+    destination(d_asa); 
+};
+
+

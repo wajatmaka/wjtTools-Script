@@ -1,0 +1,51 @@
+#!/bin/python3
+# Created : Dwiyan Galuh W
+# blog.wajatmaka.com
+
+
+""" Import Library Request HTTP, TIME and SSL """
+import requests
+import urllib3
+import datetime
+from configparser import ConfigParser
+
+""" Exception Error SSL """
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings() 
+
+""" Get Request From Paloalto with user syslog """
+try:
+    parser = ConfigParser()
+    parser.read('paloalto.cfg',encoding='utf-8')
+    for section_name in parser.sections():
+          print(section_name)
+          IP = parser.get(section_name, 'IP')
+          TOKEN = parser.get(section_name, 'TOKEN')
+          #print(IP+TOKEN)
+          url = 'https://'+IP+'/api/?type=export&category=configuration&key='+TOKEN
+          headers = {'accept': 'application/xml;q=0.9, */*;q=0.8'}
+          print("Proses Backup Dimulai")
+          response = requests.get(url, headers=headers,verify=False,timeout=10)
+          if response.status_code == 200:
+             """ Write Configuration in Disk """
+             date = datetime.datetime.now().strftime("%Y-%m-%d")
+             base_file = "/backup/data/paloalto-config-"+IP+"-"+date+".xml"
+             f_data  = open(base_file, "w")
+             f_data.write(response.text);
+             f_data.close
+          else:
+             print("Data Kosong")
+
+except requests.exceptions.RequestException as err:
+    print ("Request Terjadi Kesalahan",err)
+    exit(1)
+except requests.exceptions.HTTPError as errh:
+    print ("HTTP Terjadi Kesalahan",errh)
+    exit (1)
+except requests.exceptions.ConnectionError as errc:
+    print ("Terjadi Kesalahan Koneksi:",errc)
+    exit(1)
+except resuests.exceptions.Timeout as errt:
+    print ("Terjadi Kesalahan Timeout:",errt)    
+    exit(1)
+

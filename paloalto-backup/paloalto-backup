@@ -43,7 +43,7 @@ try:
              if response.status_code == 200:
                 """ Write Configuration in Disk """
                 date = datetime.datetime.now().strftime("%Y-%m-%d")
-                base_file = "/backup/data/paloalto-config-"+IP+"-"+date+".xml"
+                base_file = "~/paloalto-config-"+IP+"-"+date+".xml"
                 f_data  = open(base_file, "w")
                 f_data.write(response.text);
                 f_data.close

@@ -8,6 +8,7 @@ As such a title, this tools for automatic backup paloalto configuration.
 * configparser
 * pip3
 
+Install Depedency
 ```bash
 pip3 install -r requierment.txt
 ```

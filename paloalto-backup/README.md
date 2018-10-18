@@ -2,6 +2,19 @@
 
 As such a title, this tools for automatic backup paloalto configuration.
 
+## License ##
+```bash
+ ---------------------------------------------------------------------------------
+ "THE BEER-WARE LICENSE" (Revision 42):
+ <phk@FreeBSD.ORG> wrote this file.  As long as you retain this notice you
+ can do whatever you want with this stuff. If we meet some day, and you think
+ this stuff is worth it, you can buy me a beer or coffee in return. Dwiyan Galuh W
+ ---------------------------------------------------------------------------------
+ 
+ Created : Dwiyan Galuh W
+ https://blog.wajatmaka.com
+ https://github.com/wajatmaka
+```
 ## Requierment ##
 
 * python3

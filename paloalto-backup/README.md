@@ -4,11 +4,14 @@ As such a title, this tools for automatic backup paloalto configuration.
 
 ## Requierment ##
 
-> python3
-> configparser
-> pip3
+* python3
+* configparser
+* pip3
 
+```bash
 pip3 install -r requierment.txt
+```
+
 
 ## How to Get Token Paloalto ##
 

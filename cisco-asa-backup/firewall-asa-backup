@@ -1,0 +1,102 @@
+#!/bin/python3
+# 
+#  ---------------------------------------------------------------------------------
+#  "THE BEER-WARE LICENSE" (Revision 42):
+#  <phk@FreeBSD.ORG> wrote this file.  As long as you retain this notice you
+#  can do whatever you want with this stuff. If we meet some day, and you think
+#  this stuff is worth it, you can buy me a beer or coffee in return. Poul-Henning Kamp
+#  ---------------------------------------------------------------------------------
+# 
+# Created : Dwiyan Galuh W
+# https://blog.wajatmaka.com
+# https://github.com/wajatmaka
+
+
+import getpass
+import sys
+import telnetlib
+import datetime
+import time
+import paramiko
+import socket
+from configparser import ConfigParser
+
+
+def check_telnet(IP):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(2)
+    try :
+        s.connect((IP, 23))
+        return True
+    except :
+        return False
+
+try:
+    parser = ConfigParser()
+    parser.read('firewall-asa.cfg',encoding='utf-8')
+    for section_name in parser.sections():
+      print("HOST : "+section_name)
+    
+      """ Ambil Konfigurasi """
+      IP = parser.get(section_name, 'IP')
+      USER = parser.get(section_name, 'USER')
+      PASSWORD = parser.get(section_name, 'PASSWORD')
+      ENABLE = parser.get(section_name, 'ENABLE')
+      PATH = parser.get(section_name, 'PATH')
+      #print(IP+USER+PASSWORD+ENABLE)       
+      check=check_telnet(IP) 
+      if check == True:
+         print("backup via telnet")
+         """ Connect To Server """
+         telnet  = telnetlib.Telnet(IP) 
+         telnet.read_until(b"Username: ", 120)
+         telnet.write(USER.encode('ascii') +  b"\n")
+         telnet.read_until(b"Password: ", 120)
+         telnet.write(PASSWORD.encode('ascii') + b'\r')
+         telnet.write(b"enable" + b'\r\n')
+         telnet.write(ENABLE.encode('ascii') + b'\r\n')
+         telnet.write(b"terminal pager 0" + b'\r\n')
+         telnet.write(b"show running-config"+ b"\r\n")
+         telnet.write(b"exit" + b'\r')
+ 
+         """ Save All Configuration  """
+         stream_telnet = telnet.read_all()
+         date = datetime.datetime.now().strftime("%Y-%m-%d")
+         CiscoFile = open(PATH+"/firewall-asa-"+IP+"-"+date,"wb")
+         CiscoFile.write(stream_telnet)
+         CiscoFile.close()
+         response = 'Backup Sukses'
+         time.sleep(1)
+      else:
+         print("backup via ssh")
+         """ Inisiasi ssh client """
+         ssh_client=paramiko.SSHClient()
+         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+         ssh_client.connect(hostname = IP,
+		            username = USER,
+			    password = PASSWORD,
+                            allow_agent=False,
+                            look_for_keys=False)
+         remote_conn = ssh_client.invoke_shell()
+         date= datetime.datetime.now().strftime("%Y-%m-%d")
+         CiscoFile = open(PATH+"/firewall-asa-"+IP+"-"+date,"wb")
+         remote_conn.send('enable\n')
+         time.sleep(6)
+         remote_conn.send(ENABLE+'\n')
+         time.sleep(4)
+         remote_conn.send('terminal pager 0\n')
+         time.sleep(5)
+         remote_conn.send('show running-config\n')
+         time.sleep(5)
+         remote_conn.send('exit\n')
+         time.sleep(4)
+         output = remote_conn.recv(1000000)
+         CiscoFile.write(output)
+         ssh_client.close()	
+         CiscoFile.close()
+         
+except Exception as error:
+      response = 'Backup NOK'
+      print(error)
+finally:
+      print('selesai')

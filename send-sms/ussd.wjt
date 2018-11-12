@@ -1,0 +1,65 @@
+#!/usr/bin/python2.7
+
+#################SEND MESSAGE SERIAL WAVECOM###################
+# Format :   						      					  #
+# Send sms dongle serial gsm or modempool wavecom	          #
+# 							      							  #
+# By: Wajatmaka | Galuh D Wijatmiko		              		  #
+###############################################################
+
+import sys
+import serial
+import io
+import time
+import re
+import datetime
+
+
+class SMServer(object): 
+    def __init__(self,device,ussd):
+        """ Inisial device serial  """
+        self.ser=None
+        self.device = device
+	self.ussd = ussd
+
+    def connect(self):
+        """ Konek Device serial """
+        try:
+            self.ser = serial.Serial(self.device,115200,timeout=2)
+            self.ser.write("ATZ\r")
+	    return True
+
+        except Exception,e:
+            print "[-] "+str(e)
+            return False
+
+    def sendUSSD(self,ussd):
+        """ Kirim Message """
+        waktu = datetime.datetime.now()
+        format_waktu = waktu.strftime('%Y/%m/%d %H:%M:%S')
+        self.ser.write('AT+CUSD=1,%s,15\r'%ussd)
+	print self.ser.readall()
+        line = True
+        index = 0
+        while line:
+           line = self.ser.readline()
+           if line.find('CUSD: 1') == 1:
+              print line.strip()
+           index += 1
+
+        
+    def kill(self):
+        """ Tutup koneksi serial """
+        self.ser.close()
+
+if __name__ == "__main__":
+    if  len(sys.argv) < 3:
+        print "\nParameter Kurang Dari 2 Inputan\n\n Format : python2.7 ussd.wjt /dev/ttyUSB0 '*888#'"
+        exit(0)
+    else:	
+    	device = sys.argv[1] 
+    	ussd = sys.argv[2]
+        s = SMServer(device,ussd)
+        if s.connect():
+	  s.sendUSSD(ussd)
+        s.kill()

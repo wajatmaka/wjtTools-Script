@@ -1,0 +1,66 @@
+#!/usr/bin/python2.7
+
+#################SEND MESSAGE SERIAL WAVECOM###################
+# Format :   						      #
+# Send sms dongle serial gsm or modempool wavecom	      #
+# 							      #
+# By: Wajatmaka | Galuh D Wijatmiko		              #
+###############################################################
+
+import sys
+import serial
+import io
+import time
+import re
+import datetime
+
+
+class SMServer(object): 
+    def __init__(self,device):
+        """ Inisial device serial  """
+        self.ser=None
+        self.device = device
+
+    def connect(self):
+        """ Konek Device serial """
+        try:
+            self.ser = serial.Serial(self.device,115200,timeout=2)
+            self.ser.write("AT+CMGF=1\r\n")
+            return True
+
+        except Exception,e:
+            print "[-] "+str(e)
+            return False
+
+    def sendMessage(self,number,message):
+        """ Kirim Message """
+        try:
+	   waktu = datetime.datetime.now()
+           format_waktu = waktu.strftime('%Y/%m/%d %H:%M:%S')
+           self.ser.write('AT+CMGS="'+number+'"\r\n')
+           self.ser.write(message)
+           self.ser.write(chr(26))
+           print format_waktu+" [+] Message Sent"
+	
+	except Exception,e:
+           print "[-] "+str(e)
+           return False
+
+
+
+    def kill(self):
+        """ Tutup koneksi serial """
+        self.ser.close()
+
+if __name__ == "__main__":
+	if  len(sys.argv) < 4:
+          print "\nParameter Kurang Dari 4 Inputan\n\n Format : python2.7 send.wjt /dev/ttyUSB0 081375799611 'Kirim Pesan'"
+          exit(0)
+	else:	
+	  device = sys.argv[1]
+	  nomer = sys.argv[2]
+	  pesan = sys.argv[3]
+	  s = SMServer(device)
+	  if s.connect():
+   	     s.sendMessage(nomer,pesan)
+   	  s.kill()

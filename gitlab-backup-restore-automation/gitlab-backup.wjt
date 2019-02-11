@@ -1,0 +1,20 @@
+#!/bin/bash
+# 
+# Dwiyan Galuh W
+# Script For Backup Gitlab and send file to another host with md5sum
+#
+#
+#
+#
+
+
+gitlab-rake gitlab:backup:create
+dir_backup=`cat /etc/gitlab/gitlab.rb | grep "gitlab_rails\['backup_path'\]" | sed "s/^ //" | awk -F"=" '{print $2}' | sed "s/^ //"| sed "s/^\"//"| sed "s/\"//"`
+backup=`ls -1tr $dir_backup | grep gitlab_backup.tar | egrep -v "grep|md5sum" | tail -n1`
+cd /var/opt/gitlab/backups/
+md5sum $backup | awk '{print $1}' > $backup.md5sum
+chown git:git $backup.md5sum
+rsync -avz --progress --delete -e ssh $backup root@gitlab-nex.wajatmaka.com:/backup/
+rsync -avz --progress --delete -e ssh $backup.md5sum root@gitlab-nex.wajatmaka.com:/backup/
+rm $backup.md5sum
+

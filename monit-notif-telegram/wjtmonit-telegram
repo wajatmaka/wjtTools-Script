@@ -32,8 +32,8 @@ log.basicConfig(filename=log_file,
 # MonitAlertBot details 
 # Add your token & chatid here 
 
-token = '716532546:AAEu4ZbHbJgMjxY57WKs9syBh-ohh5X0Ebk'
-chatid = -259339815
+token = ''
+chatid =
 
 # Monit email alert message information fields
 
